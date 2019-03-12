@@ -25,13 +25,6 @@ describe Oystercard do
   end
 
   context '#deduct' do
-    it 'responds to deduct method' do
-      expect(card).to respond_to(:deduct)
-    end
-
-    it 'balance should change when deducted' do
-      expect(card.deduct(2)).to be < 0
-    end
 
     it "it doesn't allow entry - balance below Minimum fare" do
       expect { card.touch_in }.to raise_error "Not enough funds - Minimum balance needed is: #{Oystercard::MINIMUM_FARE}"
@@ -71,6 +64,10 @@ describe Oystercard do
     it 'is not in journey' do
       card.touch_out
       expect(card).not_to be_in_journey
+    end
+
+    it 'reduces the customers balance by the minimum fare' do
+      expect { card.touch_out }.to change{ card.balance }.by -Oystercard::MINIMUM_FARE
     end
   end
 end
