@@ -1,6 +1,7 @@
 class Oystercard
   START_BALANCE = 0
   MAX_BALANCE = 90
+  MINIMUM_FARE = 1
   attr_reader :balance
 
   def initialize(balance = START_BALANCE, journey = false)
@@ -18,6 +19,7 @@ class Oystercard
   end
 
   def touch_in
+    fail "Not enough funds - Minimum balance needed is: #{MINIMUM_FARE}" if @balance < MINIMUM_FARE
     @journey = true
   end
 
