@@ -59,6 +59,12 @@ describe Oystercard do
       # (card.touch_in) returns true, and the .to be_in_journey sens the in_journey message to the return of card.touch_in
       # it dosen't work because true dosent respond to in_journey? methods
     end
+    
+      it 'is not in journey' do 
+        card.touch_out
+        expect(card).not_to be_in_journey
+
+    end
   end
 end
 
