@@ -1,47 +1,49 @@
-class Oystercard
-  START_BALANCE = 0
-  MAX_BALANCE = 90
-  MINIMUM_FARE = 1
-  attr_reader :balance, :entry_station
+require_relative 'journey.rb'
+require_relative 'station.rb'
 
-  def initialize(balance = START_BALANCE, journey = false)
+class Oyster
+  MAXIMUM_LIMIT = 90
+  MINIMUM_FARE = 1
+  PENALTY_FARE = 6
+  attr_reader :balance, :status, :entry_station, :journeys, :exit_station
+
+  def initialize(balance = 0)
     @balance = balance
-    @journey = journey
+    @in_journey = false
+    @journeys = []
   end
 
-  ### attr reader creates this
-  # def test
-  #   @test
-  # end
-  ###
+  def top_up(value)
+    raise "Can't top up: Maximum limit of #{MAXIMUM_LIMIT} reached" if check_top_up(value)
 
-  def top_up(amount)
-    fail 'Max balance reached' if (amount + balance) > MAX_BALANCE
-    @balance += amount
+    @balance += value
   end
 
   def touch_in(station)
-    fail "Not enough funds - Minimum balance needed is: #{MINIMUM_FARE}" if @balance < MINIMUM_FARE
+    deduct(PENALTY_FARE) if in_journey?
+    raise 'Insufficient Funds' if @balance < 1
+
     @entry_station = station
-    @journey = true
   end
 
-  def touch_out
-   deduct(MINIMUM_FARE)
-   @entry_station = nil
-   @journey = false
+  def touch_out(station)
+    deduct(MINIMUM_FARE)
+    @journeys << { :entry_station => station, :exit_station => nil }
+    @exit_station = station
+    @entry_station = nil
   end
 
   def in_journey?
-    @journey
+    @entry_station != nil
   end
 
-  private 
+  private
 
-  def deduct(amount)
-    @balance -= amount
+  def check_top_up(value)
+    (@balance + value) > MAXIMUM_LIMIT
   end
 
-
+  def deduct(value)
+    @balance -= value
+  end
 end
-
